@@ -1,0 +1,118 @@
+# A game domino. 1 stage.
+import random
+
+all_pieces = [
+    [2, 5], [1, 2], [3, 6], [0, 0], [0, 2], [5, 6], [3, 5],
+    [2, 4], [3, 4], [1, 5], [0, 4], [2, 6], [3, 3], [1, 1],
+    [1, 4], [1, 3], [2, 3], [4, 5], [2, 2], [0, 3], [0, 6],
+    [5, 5], [4, 4], [4, 6], [0, 1], [0, 5], [1, 6], [6, 6]]
+
+random.seed()
+random.shuffle(all_pieces)
+
+stock_pieces = all_pieces[:14]  # 14 domino elements
+comp_pieces = all_pieces[14:21]  # 7 or 6 domino elements
+player_pieces = all_pieces[21:]  # 6 or 7 domino elements
+
+if max(player_pieces) > max(comp_pieces):  # 1 starting domino
+    domino_snake = [player_pieces.pop(player_pieces.index(max(player_pieces)))]
+    status = 'computer'  # the computer first
+else:
+    domino_snake = [comp_pieces.pop(comp_pieces.index(max(comp_pieces)))]
+    status = 'player'  # the player first
+
+
+def status_player():
+    print('=' * 70)
+    print('Stock size:', len(stock_pieces))
+    print('Computer pieces:', len(comp_pieces))
+    print()
+    if len(domino_snake) < 6:
+        print(*domino_snake, sep='')
+    elif len(domino_snake) >= 6:
+        print(*domino_snake[:3], '...', *domino_snake[-4:-1], sep='')
+    print()
+    print('Your pieces:')
+    for i in range(len(player_pieces)):
+        print(i + 1, ":", player_pieces[i], sep="")
+    if len(player_pieces) != 0:
+        print("\nStatus: It's your turn to make a move. Enter your command.")
+
+
+def status_computer():
+    print('=' * 70)
+    print('Stock size:', len(stock_pieces))
+    print('Computer pieces:', len(comp_pieces))
+    print()
+    if len(domino_snake) < 6:
+        print(*domino_snake, sep='')
+    elif len(domino_snake) >= 6:
+        print(*domino_snake[:3], '...', *domino_snake[-4:-1], sep='')
+    print()
+    print('Your pieces:')
+    for i in range(len(player_pieces)):
+        print(i + 1, ":", player_pieces[i], sep="")
+    if len(comp_pieces) != 0:
+        print('\nStatus: Computer is about to make a move. Press Enter to continue...')
+        input()
+
+
+# A game domino. 2-3 stage.
+while True:
+    if len(comp_pieces) == 0 or len(player_pieces) == 0:  # End-game. Player out of piece.
+        if len(comp_pieces) == 0:
+            status_computer()
+            print('\nStatus: The game is over. The computer won!')
+        elif len(player_pieces) == 0:
+            status_player()
+            print('\nStatus: The game is over. You won!')
+        else:
+            print("\nStatus: The game is over. It's a draw!")
+        break
+
+    if status == 'player':
+        status_player()
+        user_turn = list(input())
+        while True:
+            try:
+                if user_turn[0] == '0':
+                    player_pieces.insert(0, stock_pieces[0])
+                    stock_pieces.pop(0)
+                    break
+                elif user_turn[0] == '-':  # domino and place it on the left
+                    user_turn = int(user_turn[1])
+                    domino_snake.insert(0, player_pieces[user_turn - 1])
+                    player_pieces.pop(user_turn - 1)
+                    break
+                elif user_turn[0] != '-':  # domino and place it on the right
+                    user_turn = list(map(int, user_turn))
+                    index = 0
+                    index = user_turn[0]
+                    domino_snake.append(player_pieces[index - 1])
+                    player_pieces.pop(index - 1)
+                    break
+            except:
+                print('Invalid input. Please try again.')
+                user_turn = list(input())
+
+    if status == 'computer':
+        status_computer()
+        ai_turn = random.randint(0, 2)
+        if ai_turn == 1:                            # domino and place it on the right
+            domino_snake.append(comp_pieces[0])
+            comp_pieces.pop(0)
+        elif ai_turn == 2:                          # domino and place it on the left
+            domino_snake.insert(0, comp_pieces[0])
+            comp_pieces.pop(0)
+        else:
+            comp_pieces.insert(0, stock_pieces[0])# take random piece from stock_pieces
+            stock_pieces.pop(0)
+
+
+    if status == 'player':                          # turn status. computer or player
+        status = 'computer'
+    elif status == 'computer':
+        status = 'player'
+
+# stock_pieces - 1. 0 : Take an extra piece from the stock (if it's not empty) and skip a turn.
+# in code ai random in hiperscill another --------------

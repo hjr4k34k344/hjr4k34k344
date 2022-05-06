@@ -1,0 +1,38 @@
+# neural network
+import numpy as np
+
+
+def sigmoid(x):
+    return 1 / 1 + (np.exp(-x))
+
+
+input_training = np.array([[0, 0, 1],
+                           [1, 1, 1],
+                           [1, 0, 1],
+                           [0, 1, 1]])
+
+output_training = np.array([[0, 1, 1, 0]]).T
+
+np.random.seed(1)
+sinaptic_weights = np.random.random((3, 1)) - 1
+
+print('Sigmoid weights:')
+print(sinaptic_weights)
+
+for i in range(20000):
+    input_layers = input_training
+    outputs = sigmoid(np.dot(input_layers, sinaptic_weights))
+
+    err = output_training - outputs
+    adjustment = np.dot(input_layers.T, err * (outputs * (1 - outputs)))
+
+    sinaptic_weights += adjustment
+
+print('\nValues:')
+print(outputs)
+
+new_date = np.array([1, 1, 0])
+outputs = sigmoid(np.dot(new_date, sinaptic_weights))
+
+print('\nNew value:')
+print('', outputs)
